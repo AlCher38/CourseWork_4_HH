@@ -1,7 +1,7 @@
 from typing import List
 
 from pip._vendor import requests
-from src.abstract import HhVacancyAPI
+from src.api_hh import HhVacancyAPI
 from src.json_saver import JSONSaver
 
 
