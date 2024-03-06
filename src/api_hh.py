@@ -1,37 +1,43 @@
-import requests
+
+from abc import ABC, abstractmethod
+from typing import List
+
+from pip._vendor import requests
 
 
-class JobAPI:
-    def __init__(self):
+class AbstractVacancyAPI(ABC):
+
+    @abstractmethod
+    def connect(self):
+        pass
+
+    @abstractmethod
+    def get_vacancies(self, params):
+        pass
+
+
+class HhVacancyAPI(AbstractVacancyAPI):
+
+    def __init__(self, api_key):
         """
-        Инициализирует объект с заданным значением base_url.
-        :param base_url: str - Базовый URL-адрес объекта.
-        :return: None
+        Инициализирует объект с указанным именем файла.
+        :param api_key:
         """
+        self.api_key = api_key
         self.url = 'https://api.hh.ru/vacancies'
-        self.params = {
-            'text': 'python',
-            'page': 0
-        }
 
-    def get_vacancies(self):
+    def connect(self):
+        # Implement logic to connect to the hh.ru API using the provided API key
+        pass
+
+    def get_vacancies(self, params):
         """
         Отправляет запрос GET в API и возвращает список вакансий.
+        :param params: Параметры, которые должны быть переданы в запросе.
         :return: Список вакансий.
         """
-        response = requests.get(self.url, params=self.params)
-        return response
-
-
-class HhJobAPI(JobAPI):
-    """
-    Инициализирует новый экземпляр класса с указанным базовым URL-адресом.
-    Parameters:
-    base_url (str): Базовый URL-адрес для API.
-    Returns:
-        None
-    """
-
-    def __init__(self, base_url="https://api.hh.ru"):
-        super().__init__()
-        self.base_url = base_url
+        response = requests.get(f"{self.url}", params=params)
+        if response.status_code == 200:
+            return response.json()["items"]
+        else:
+            return None
